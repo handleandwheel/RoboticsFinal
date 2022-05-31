@@ -22,7 +22,7 @@ public:
 	~HLMotionPlan();
 
 	void SetSampleTime(const double& sampleTime);
-	void SetPlanPoints(const vector<PosStruct> &points);
+	void SetPlanPoints(const vector<PosStruct>& points);
 	void SetLinearParam(const double& vel, const double& acc, const double& dec);
 	void SetAngularParam(const double& ang_vel, const double& ang_acc, const double& ang_dec);
 	void GetPlanPoints(const char* filename);
