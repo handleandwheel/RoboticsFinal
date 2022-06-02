@@ -31,7 +31,6 @@ RobotCommunication::~RobotCommunication()
 	WSACleanup();
 }
 
-
 void RobotCommunication::connect_server()
 {
 	// initialize socket
@@ -84,7 +83,6 @@ void RobotCommunication::initialize_command()
 
 void RobotCommunication::communicate(const char *s_send, const string &log_header, int delay=100)
 {
-	char send_buf[100] = {};
 	char recv_buf[200] = {};
 	int send_len = send(s_server, s_send, 100, 0);
 	int recv_len = recv(s_server, recv_buf, 100, 0);

@@ -3,7 +3,6 @@
 
 using namespace std;
 
-
 class RobotCommunication
 {
 public:
@@ -11,7 +10,7 @@ public:
 	RobotCommunication(string addr, int port);
 	~RobotCommunication();
 	void initialize();
-	void communicate(const char* s_send, const string& log_header, int delay);
+	void communicate(const char* s_send, const string& log_header, int delay=100);
 private:
 	void connect_server();
 	void initialize_command();

@@ -6,6 +6,7 @@
 #include <Windows.h>
 #include "eigen3/Eigen/Dense"
 #include "math.h"
+#include "HLrobotconfig.h"
 
 using namespace std;
 using namespace SRobot;
@@ -22,7 +23,7 @@ HLMotionPlan::HLMotionPlan()
 
 HLMotionPlan::~HLMotionPlan() {}
 
-void HLMotionPlan::SetSampleTime(const double& sampleTime)
+void HLMotionPlan::SetSampleTime(const double& sampleTime = 0.001)
 {
 	if (sampleTime < 0.001)
 	{
@@ -55,12 +56,12 @@ void HLMotionPlan::SetAngularParam(const double& ang_vel, const double& ang_acc,
 	cout << "[Planning]\tmax angular deceleration is set to : " << mAngDec << "deg/s/s" << endl;
 }
 
-void HLMotionPlan::SetPlanPoints(const vector<PosStruct>& points)
+void HLMotionPlan::SetCtrlPoints(const vector<PosStruct>& points)
 {
 	ctrlPoints = points;
 }
 
-void HLMotionPlan::PlanSegment(const PosStruct& startPoint, const PosStruct& endPoint, const ofstream& file)
+void HLMotionPlan::PlanSegment(const PosStruct& startPoint, const PosStruct& endPoint, ofstream& file)
 {
 	Vector3d startPos(startPoint.x, startPoint.y, startPoint.z);
 	Vector3d startAng(startPoint.yaw, startPoint.pitch, startPoint.roll);
@@ -81,26 +82,45 @@ void HLMotionPlan::PlanSegment(const PosStruct& startPoint, const PosStruct& end
 	else
 		PlanTrapezoidal(mAngVel, mAngAcc, mAngDec, startAng, endAng, wayAng);
 	Matrix<double, 6, 1> wayPoint;
+	bool config[3] = { 1, 0, 0 };
+	double theta[6] = { 0.0 };
 	for (int i = 0; i < max(wayPos.size(), wayAng.size()); i++)
 	{
 		wayPoint.topLeftCorner(3, 1) = (i < wayPos.size()) ? wayPos[i] : wayPos[wayPos.size() - 1];
 		wayPoint.bottomLeftCorner(3, 1) = (i < wayAng.size()) ? wayAng[i] : wayAng[wayAng.size() - 1];
 		// wayPoint(0, 1, 2, 3, 4, 5) = x, y, z, yaw, pitch, roll;
-		// TODO: inverse kinematics
+		HLRobot::robotBackwardHJQ(wayPoint.topLeftCorner(3, 1), wayPoint.bottomLeftCorner(3, 1), config, theta);
+		file << theta[0] << "  " << theta[1] << "  " << theta[2] << "  " 
+			<< theta[3] << "  " << theta[4] << "  " << theta[5] << endl;
 	}
-	// TODO: put the points into file without the start and end points
 }
 
 void HLMotionPlan::GetPlanPoints(const char* filename)
 {
 	ofstream outfile;
 	outfile.open(filename);
+	bool config[3] = { 1, 0, 0 };
+	double theta[6] = { 0.0 };
 	for (int i = 0; i < ctrlPoints.size() - 1; i++)
 	{
-		// TODO: put the start points into file
+		Vector3d spos, sang;
+		spos << ctrlPoints[i].x, ctrlPoints[i].y, ctrlPoints[i].z;
+		sang << ctrlPoints[i].yaw, ctrlPoints[i].pitch, ctrlPoints[i].roll;
+		HLRobot::robotBackwardHJQ(spos, sang, config, theta);
+		outfile << theta[0] << "  " << theta[1] << "  " << theta[2] << "  "
+			<< theta[3] << "  " << theta[4] << "  " << theta[5] << endl;
 		PlanSegment(ctrlPoints[i], ctrlPoints[i + 1], outfile);
 	}
-	// TODO: put the end points into file
+	Vector3d epos, eang;
+	epos << ctrlPoints[ctrlPoints.size() - 1].x,
+		ctrlPoints[ctrlPoints.size() - 1].y,
+		ctrlPoints[ctrlPoints.size() - 1].z;
+	eang << ctrlPoints[ctrlPoints.size() - 1].yaw,
+		ctrlPoints[ctrlPoints.size() - 1].pitch,
+		ctrlPoints[ctrlPoints.size() - 1].roll;
+	HLRobot::robotBackwardHJQ(epos, eang, config, theta);
+	outfile << theta[0] << "  " << theta[1] << "  " << theta[2] << "  "
+		<< theta[3] << "  " << theta[4] << "  " << theta[5] << endl;
 	outfile.close();
 }
 

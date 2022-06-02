@@ -21,13 +21,13 @@ public:
 	HLMotionPlan();
 	~HLMotionPlan();
 
-	void SetSampleTime(const double& sampleTime);
-	void SetPlanPoints(const vector<PosStruct>& points);
+	void SetSampleTime(const double& sampleTime=0.001);
+	void SetCtrlPoints(const vector<PosStruct>& points);
 	void SetLinearParam(const double& vel, const double& acc, const double& dec);
 	void SetAngularParam(const double& ang_vel, const double& ang_acc, const double& ang_dec);
 	void GetPlanPoints(const char* filename);
 private:
-	void PlanSegment(const PosStruct& startPoint, const PosStruct& endPoint, const ofstream& outfile);
+	void PlanSegment(const PosStruct& startPoint, const PosStruct& endPoint, ofstream& outfile);
 	void PlanTrapezoidal(const double& mVel, const double& mAcc, const double& mDec, const Vector3d& startPoint, const Vector3d& endPoint, vector<Vector3d>& wayPoints);
 	void PlanTriangle(const double& mAcc, const double& mDec, const Vector3d& startPoint, const Vector3d& endPoint, vector<Vector3d>& wayPoints);
 	vector<PosStruct> ctrlPoints;				// way points in cartesian frame

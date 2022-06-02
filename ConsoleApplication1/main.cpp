@@ -1,6 +1,7 @@
 ﻿#include<iostream>
 #include<winsock.h>
 #include <conio.h>
+#include <vector>
 #include "ftp/FtpControl.h"
 #include "eigen3/Eigen/Core"
 #include "MotionPlan.h"
@@ -13,15 +14,19 @@ using namespace std;
 
 int main()
 {
-	//PosStruct start_pos = { 337.98, 48.150, -17.35, 0, 180, -154.08 };
-	//PosStruct end_pos = { 337.99, -30.0, -17.35, 0.0, 180.0, -154.08 };
+	//PosStruct homePoint = {};
+	//PosStruct safePoint = {};
+	//PosStruct warePoint = {};
+	//PosStruct throwPoint = {};
+	//PosStruct endPoint = {};
+	//vector<PosStruct> ctrlPoints = { homePoint, safePoint, warePoint, endPoint };
 	//HLMotionPlan motion_plan;
-	//motion_plan.SetSampleTime(0.001);
-	//motion_plan.SetProfile(0.3, 1.0, 1.0);
-	//motion_plan.SetPlanPoints(start_pos, end_pos);
-	//motion_plan.GetPlanPoints_line();
-	// TODO: get the control points and generate the path
-
+	//motion_plan.SetSampleTime();
+	//motion_plan.SetLinearParam();
+	//motion_plan.SetAngularParam();
+	//motion_plan.SetCtrlPoints();
+	//motion_plan.GetPlanPoints();
+	
 	RobotCommunication robo_com;
 	robo_com.initialize();
 
